@@ -21,6 +21,8 @@ module FonepaisaPG
 				test_url_cancel = 'https://test.fonepaisa.com/portal/payment/cancel'
 			elsif Rails.env.production?
 				test_url_cancel = 'https://secure.fonepaisa.com/portal/payment/cancel'
+			else
+				test_url_cancel = 'https://test.fonepaisa.com/portal/payment/cancel'
 			end
 			uri = URI.parse(test_url_cancel)
 			http = Net::HTTP.new(uri.host, uri.port)
@@ -50,6 +52,8 @@ module FonepaisaPG
 				test_url_inquire = 'https://test.fonepaisa.com/portal/payment/inquire'
 			elsif Rails.env.production?
 				test_url_inquire = 'https://secure.fonepaisa.com/portal/payment/inquire'
+			else
+				test_url_inquire = 'https://test.fonepaisa.com/portal/payment/inquire'
 			end
 			uri = URI.parse(test_url_inquire)
 			http = Net::HTTP.new(uri.host, uri.port)
