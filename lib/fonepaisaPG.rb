@@ -11,19 +11,20 @@ module FonepaisaPG
 			@sign.unpack('H*').first
 		end
 
-		def cancel(privKey,apiKey,id,merchant_id,invoice)
+		def cancel(privKey,apiKey,id,merchant_id,invoice,cancel_url)
 			@hash_input = apiKey + '#' + id + '#' + merchant_id + '#' + invoice + '#'
 			@PRIVATE_KEY = OpenSSL::PKey::RSA.new(privKey)
 			@signature = @PRIVATE_KEY.sign DIGEST, @hash_input
 			@sign = @signature.unpack('H*').first
 			@post_data = Hash[ :id => id, :merchant_id => merchant_id,:sign=>@sign,:invoice=>invoice]
-			if Rails.env.test? || Rails.env.development?
-				test_url_cancel = 'https://test.fonepaisa.com/portal/payment/cancel'
-			elsif Rails.env.production?
-				test_url_cancel = 'https://secure.fonepaisa.com/portal/payment/cancel'
+
+			if Rails.env.production?
+  			test_url_cancel = 'https://secure.fonepaisa.com/portal/payment/cancel'
 			else
-				test_url_cancel = 'https://test.fonepaisa.com/portal/payment/cancel'
+  			test_url_cancel = 'https://test.fonepaisa.com/portal/payment/cancel'
 			end
+			test_url_cancel = cancel_url.present? ? cancel_url : test_url_cancel
+
 			uri = URI.parse(test_url_cancel)
 			http = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl = true
@@ -42,19 +43,20 @@ module FonepaisaPG
 			return @signVerify
 		end
 
-		def inquire(privKey,apiKey,id,merchant_id,invoice)
+		def inquire(privKey,apiKey,id,merchant_id,invoice,inquire_url)
 			@hash_input = apiKey + '#' + id + '#' + merchant_id + '#' + invoice + '#'
 			@PRIVATE_KEY = OpenSSL::PKey::RSA.new(privKey)
 			@signature = @PRIVATE_KEY.sign DIGEST, @hash_input
 			@sign = @signature.unpack('H*').first
 			@post_data = Hash[ :id => id, :merchant_id => merchant_id,:sign=>@sign,:invoice=>invoice]
-			if Rails.env.test? || Rails.env.development?
-				test_url_inquire = 'https://test.fonepaisa.com/portal/payment/inquire'
-			elsif Rails.env.production?
-				test_url_inquire = 'https://secure.fonepaisa.com/portal/payment/inquire'
+			
+			if Rails.env.production?
+  			test_url_inquire = 'https://secure.fonepaisa.com/portal/payment/inquire'
 			else
-				test_url_inquire = 'https://test.fonepaisa.com/portal/payment/inquire'
+  			test_url_inquire = 'https://test.fonepaisa.com/portal/payment/inquire'
 			end
+			test_url_inquire = inquire_url.present? ? inquire_url : test_url_inquire
+
 			uri = URI.parse(test_url_inquire)
 			http = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl = true
